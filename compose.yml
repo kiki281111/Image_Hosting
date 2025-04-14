@@ -1,31 +1,56 @@
-networks:
-  default:
-
-
 services:
   app:
+    build: ../project_java/app
     container_name: app
-    build: .
+    env_file:
+      - ./.env
     ports:
       - "8000:8000"
     volumes:
+      - ./static:/app/static
       - ./images:/app/images
       - ./logs:/app/logs
     networks:
-      - default
+      - front-network
+      - back-network
+    depends_on:
+      - db
 
   nginx:
+    image: nginx
+    restart: always
     container_name: nginx
     command: nginx -g "daemon off;"
-    image: nginx:latest
     ports:
       - "80:80"
     volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+      - ./static:/usr/share/nginx/html
       - ./images:/images
       - ./logs:/var/log/nginx
-      - ./static:/etc/nginx/html
-      - ./nginx.conf:/etc/nginx/nginx.conf
     networks:
-      - default
+      - front-network
     depends_on:
       - app
+
+  db:
+    image: postgres:latest
+    container_name: db
+    env_file:
+      - ./.env
+    ports:
+      - "5432:5432"
+    volumes:
+      - image_hosting_data:/var/lib/postgresql/data
+    networks:
+      - back-network
+    restart: always
+
+volumes:
+  image_hosting_data:
+
+networks:
+  front-network:
+    driver: bridge
+  back-network:
+    driver: bridge
