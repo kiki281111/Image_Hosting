@@ -1,7 +1,7 @@
 * Проект ImageHosting *
 * Проект запускается с помощью одной команды: docker compose up --build. Остановка: docker compose down
 
-* Структура проекта: 
+* Структура проекта:
 - docker-compose.yml — конфигурация сервисов.
 - app/ — код Python-бэкенда
 - nginx — конфигурация Nginx.
